@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>repurpose — C</title>
+<style>
+html, body {
+  background-color: #1A1512;
+}
+body {
+  margin: 0;
+  padding: 9vh 8vw 12vh 44vw;
+  color: #EFE7D7;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.name {
+  margin: 0 0 3.5rem;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5em;
+}
+.purpose {
+  margin: 0 0 3.4rem;
+  font-family: Palatino, "Book Antiqua", serif;
+  font-size: 30px;
+  line-height: 1.32;
+}
+.phases {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: Palatino, "Book Antiqua", serif;
+  font-size: 21px;
+}
+.phases li {
+  margin: 0;
+}
+.wait {
+  color: #7FA9DC;
+  font-style: italic;
+  line-height: 2.05;
+  margin-bottom: 2.8rem;
+}
+.wait li {
+  margin-bottom: 0.5rem;
+}
+.move {
+  color: #E3A83B;
+  line-height: 1.2;
+  margin-bottom: 2.8rem;
+}
+.move li {
+  margin-bottom: 0.12rem;
+}
+.set {
+  color: #EFE7D7;
+  line-height: 1.55;
+  margin-bottom: 3.2rem;
+}
+.set li {
+  margin-bottom: 0.38rem;
+}
+.appl {
+  margin: 0 0 2.6rem;
+  padding: 0;
+  list-style: none;
+  color: #EFE7D7;
+}
+.appl li {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  line-height: 2.5;
+}
+.note {
+  margin: 0 0 1rem;
+  max-width: 46ch;
+  font-size: 13px;
+  line-height: 1.75;
+}
+.fig {
+  margin: 2.4rem 0 0;
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  line-height: 2.1;
+}
+@media (max-width: 900px) {
+  body {
+    padding-left: 10vw;
+  }
+}
+</style>
+</head>
+<body>
+<header>
+  <p class="name">repurpose</p>
+</header>
+<main>
+  <p class="purpose">YouTube URL -&gt; transcript -&gt; LinkedIn/X drafts -&gt; 9:16 clip</p>
+
+  <ul class="phases wait">
+    <li>queued</li>
+    <li>Waiting in the queue…</li>
+    <li>No jobs yet - paste a URL above.</li>
+    <li>transcript, drafts and the clip appear here when it finishes.</li>
+    <li>[n] jobs · [n] pending</li>
+    <li>No transcript segments.</li>
+    <li>No clip generated for this job.</li>
+  </ul>
+
+  <ul class="phases move">
+    <li>running</li>
+    <li>Working — transcribe…</li>
+    <li>download</li>
+    <li>transcribe</li>
+    <li>draft</li>
+    <li>clip</li>
+  </ul>
+
+  <ul class="phases set">
+    <li>done</li>
+    <li>failed</li>
+    <li>Job failed.</li>
+    <li>Copied</li>
+    <li>Transcript</li>
+    <li>LinkedIn draft</li>
+    <li>X thread</li>
+    <li>Video</li>
+    <li>Save</li>
+    <li>Copy</li>
+    <li>Download clip</li>
+    <li>Download .srt</li>
+  </ul>
+
+  <ul class="appl">
+    <li>JOBS</li>
+    <li>SETTINGS</li>
+    <li>TITLE</li>
+    <li>STATUS</li>
+    <li>CREATED</li>
+    <li>OPEN</li>
+    <li>YOUTUBE URL</li>
+    <li>…OR UPLOAD A FILE</li>
+    <li>REPURPOSE</li>
+    <li>MODEL</li>
+    <li>CLIP LENGTH</li>
+  </ul>
+
+  <p class="note">A file OR a URL works — leave one blank if you use the other. mp4 / mov / mp3 / wav / m4a / webm, max 500 MB.</p>
+  <p class="note">one tweet per paragraph - keep each under 280 chars</p>
+  <p class="fig">30-second 15 minutes 4 social networks Days 1-14 tiny base small medium</p>
+</main>
+</body>
+</html>

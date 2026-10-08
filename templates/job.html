@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% block title %}repurpose — {{ j.title or j.source }}{% endblock %}
+{% block content %}
+{% set stages = ['download', 'transcribe', 'draft', 'clip'] %}
+{% set ci = stages.index(j.stage) if j.stage in stages else -1 %}
+{% set chips = {'queued': 'bg-slate-800 text-slate-300',
+                'running': 'bg-amber-900 text-amber-300 animate-pulse',
+                'done': 'bg-emerald-900 text-emerald-300',
+                'failed': 'bg-red-900 text-red-300'} %}
+
+<!-- header -->
+<header class="mb-4 flex flex-wrap items-center gap-3">
+  <a href="{{ url_for('index') }}" class="text-sm text-slate-400 hover:text-white">&larr; all jobs</a>
+  <h1 class="min-w-0 flex-1 truncate text-lg font-semibold text-white" title="{{ j.title or j.source }}">{{ j.title or j.source }}</h1>
+  <span id="job-chip" class="rounded px-2 py-0.5 text-xs {{ chips.get(j.status, chips['queued']) }}">{{ j.status }}{% if j.status == 'running' and j.stage %} · {{ j.stage }}{% endif %}</span>
+  <span class="text-xs text-slate-500">{{ j.created_at }}</span>
+</header>
+
+<!-- stage progress -->
+{% if j.status != 'done' %}
+<div id="stage-row" class="mb-4 flex flex-wrap items-center gap-2 text-xs">
+  {% for st in stages %}
+  <span data-stage="{{ st }}" class="stage rounded px-2 py-1
+    {%- if st == j.stage %} bg-sky-600 text-white animate-pulse
+    {%- elif ci > stages.index(st) %} bg-slate-800 text-slate-400
+    {%- else %} bg-slate-900 text-slate-600{% endif %}">{{ st }}</span>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- error (failed) -->
+<div id="job-error"
+     class="mb-4 rounded border border-red-800 bg-red-950/60 px-4 py-3 text-sm text-red-200{% if j.status != 'failed' %} hidden{% endif %}">
+  <span id="job-error-text">{{ j.error or 'Job failed.' }}</span>
+</div>
+
+{% if j.status == 'done' %}
+<!-- tabs -->
+<div class="mb-3 flex flex-wrap items-center gap-2" role="tablist" aria-label="job results">
+  <button type="button" role="tab" aria-selected="true" data-tab="tab-transcript" class="rounded bg-sky-600 px-3 py-1.5 text-sm font-medium text-white">Transcript</button>
+  <button type="button" role="tab" aria-selected="false" data-tab="tab-linkedin" class="rounded border border-slate-800 bg-slate-900 px-3 py-1.5 text-sm text-slate-400 hover:text-white">LinkedIn</button>
+  <button type="button" role="tab" aria-selected="false" data-tab="tab-twitter" class="rounded border border-slate-800 bg-slate-900 px-3 py-1.5 text-sm text-slate-400 hover:text-white">X thread</button>
+  <button type="button" role="tab" aria-selected="false" data-tab="tab-video" class="rounded border border-slate-800 bg-slate-900 px-3 py-1.5 text-sm text-slate-400 hover:text-white">Video</button>
+  <button type="button" onclick="saveDrafts()"
+          class="ml-auto rounded bg-emerald-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-emerald-500">Save</button>
+</div>
+
+<!-- transcript -->
+<div id="tab-transcript" role="tabpanel">
+  <div class="mb-2 flex items-center gap-2 text-xs">
+    <span class="rounded bg-slate-800 px-2 py-0.5 font-mono text-slate-300">{{ j.clip_start|int }}s - {{ j.clip_end|int }}s</span>
+    <span class="text-slate-500">chosen clip window</span>
+  </div>
+  <div class="max-h-[60vh] space-y-1 overflow-y-auto rounded border border-slate-800 bg-slate-900 p-3">
+    {% for s in j.segments %}
+    <div class="flex gap-3 text-sm">
+      <span class="shrink-0 font-mono text-xs text-slate-500">{{ '%02d:%02d'|format((s.start|int) // 60, (s.start|int) % 60) }}</span>
+      <span>{{ s.text }}</span>
+    </div>
+    {% else %}
+    <p class="text-sm text-slate-500">No transcript segments.</p>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- linkedin -->
+<div id="tab-linkedin" role="tabpanel" class="hidden">
+  <label for="linkedin" class="mb-1 block text-xs text-slate-400">LinkedIn draft</label>
+  <textarea id="linkedin" rows="12"
+            class="w-full rounded bg-slate-950 px-3 py-2 font-mono text-sm text-white outline-none ring-slate-700 focus:ring-1">{{ j.linkedin }}</textarea>
+  <div class="mt-2">
+    <button type="button" onclick="copyText('linkedin')"
+            class="rounded bg-slate-700 px-3 py-1.5 text-sm text-white hover:bg-slate-600">Copy</button>
+  </div>
+</div>
+
+<!-- x thread -->
+<div id="tab-twitter" role="tabpanel" class="hidden">
+  <label for="twitter" class="mb-1 block text-xs text-slate-400">X thread</label>
+  <textarea id="twitter" rows="14"
+            class="w-full rounded bg-slate-950 px-3 py-2 font-mono text-sm text-white outline-none ring-slate-700 focus:ring-1">{{ j.twitter }}</textarea>
+  <div class="mt-2 flex items-center gap-3">
+    <button type="button" onclick="copyText('twitter')"
+            class="rounded bg-slate-700 px-3 py-1.5 text-sm text-white hover:bg-slate-600">Copy</button>
+    <span class="text-xs text-slate-500">one tweet per paragraph - keep each under 280 chars</span>
+  </div>
+</div>
+
+<!-- video -->
+<div id="tab-video" role="tabpanel" class="hidden">
+  {% if j.clip %}
+  <video src="{{ url_for('job_clip', jid=j.id) }}" controls playsinline
+         class="mx-auto max-h-[70vh] rounded border border-slate-800 bg-black"></video>
+  {% else %}
+  <p class="rounded border border-slate-800 bg-slate-900 p-4 text-sm text-slate-500">No clip generated for this job.</p>
+  {% endif %}
+  <div class="mt-3 flex justify-center gap-3 text-sm">
+    <a href="{{ url_for('job_clip', jid=j.id) }}" download
+       class="rounded bg-sky-600 px-3 py-1.5 font-medium text-white hover:bg-sky-500">Download clip</a>
+    <a href="{{ url_for('job_srt', jid=j.id) }}" download
+       class="rounded border border-slate-700 px-3 py-1.5 text-slate-200 hover:bg-slate-900">Download .srt</a>
+  </div>
+</div>
+
+{% elif j.status in ('queued', 'running') %}
+<!-- working skeleton -->
+<div class="animate-pulse space-y-3 rounded border border-slate-800 bg-slate-900 p-4">
+  <div class="h-4 w-1/3 rounded bg-slate-800"></div>
+  <div class="h-4 w-2/3 rounded bg-slate-800"></div>
+  <div class="h-4 w-1/2 rounded bg-slate-800"></div>
+  <div class="h-32 rounded bg-slate-800"></div>
+  <p class="text-xs text-slate-500">
+    {% if j.status == 'queued' %}Waiting in the queue…{% else %}Working{% if j.stage %} — {{ j.stage }}{% endif %}…{% endif %}
+    transcript, drafts and the clip appear here when it finishes.
+  </p>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% set stages = ['download', 'transcribe', 'draft', 'clip'] %}
+<script>
+  const STAGES = {{ stages|tojson }};
+  const CHIP = {
+    queued: 'bg-slate-800 text-slate-300',
+    running: 'bg-amber-900 text-amber-300 animate-pulse',
+    done: 'bg-emerald-900 text-emerald-300',
+    failed: 'bg-red-900 text-red-300',
+  };
+
+  function paintChip(status, stage) {
+    const el = document.getElementById('job-chip');
+    if (!el) return;
+    el.className = 'rounded px-2 py-0.5 text-xs ' + (CHIP[status] || CHIP.queued);
+    el.textContent = status + (status === 'running' && stage ? ' · ' + stage : '');
+  }
+
+  function paintStages(cur) {
+    const ci = STAGES.indexOf(cur);
+    document.querySelectorAll('#stage-row .stage').forEach(el => {
+      const i = STAGES.indexOf(el.dataset.stage);
+      el.className = 'stage rounded px-2 py-1 ' +
+        (i === ci ? 'bg-sky-600 text-white animate-pulse'
+          : i < ci ? 'bg-slate-800 text-slate-400' : 'bg-slate-900 text-slate-600');
+    });
+  }
+
+  function showTab(id, btn) {
+    document.querySelectorAll('[role=tab]').forEach(b => {
+      const on = b === btn;
+      b.setAttribute('aria-selected', on);
+      b.className = 'rounded px-3 py-1.5 text-sm ' + (on
+        ? 'bg-sky-600 font-medium text-white'
+        : 'border border-slate-800 bg-slate-900 text-slate-400 hover:text-white');
+    });
+    document.querySelectorAll('.tabpane, [role=tabpanel]').forEach(p =>
+      p.classList.toggle('hidden', p.id !== id));
+  }
+  document.querySelectorAll('[role=tab]').forEach(b =>
+    b.addEventListener('click', () => showTab(b.dataset.tab, b)));
+
+  async function saveDrafts() {
+    await post('{{ url_for("job_save", jid=j.id) }}', new URLSearchParams({
+      linkedin: document.getElementById('linkedin').value,
+      twitter: document.getElementById('twitter').value,
+    }));
+  }
+
+  {% if j.status in ('queued', 'running') %}
+  let reloaded = false;
+  const tick = setInterval(async () => {
+    try {
+      const s = await (await fetch('{{ url_for("job_status", jid=j.id) }}')).json();
+      if (s.status === 'done') {
+        clearInterval(tick);
+        if (!reloaded) { reloaded = true; location.reload(); }
+        return;
+      }
+      if (s.status === 'failed') {
+        clearInterval(tick);
+        paintChip('failed', '');
+        document.getElementById('job-error-text').textContent = s.error || 'Job failed.';
+        document.getElementById('job-error').classList.remove('hidden');
+        return;
+      }
+      paintChip(s.status, s.stage);
+      paintStages(s.stage);
+    } catch (e) {}
+  }, 2000);
+  {% endif %}
+</script>
+{% endblock %}

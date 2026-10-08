@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}repurpose — settings{% endblock %}
+{% block content %}
+<h1 class="mb-4 text-xl font-bold text-white">Settings</h1>
+<form method="post" action="{{ url_for('settings') }}" class="max-w-xl space-y-4">
+  <div>
+    <label for="whisper_model" class="block text-sm text-slate-400">Whisper model</label>
+    <select id="whisper_model" name="whisper_model"
+            class="mt-1 w-full rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white outline-none ring-slate-700 focus:ring-1">
+      {% for m in ['tiny', 'base', 'small', 'medium'] %}
+      <option value="{{ m }}"{% if s.whisper_model == m %} selected{% endif %}>{{ m }}</option>
+      {% endfor %}
+    </select>
+    <p class="mt-1 text-xs text-slate-500">base is the default. small/medium are slower on CPU. A new model downloads on first run.</p>
+  </div>
+  <div>
+    <label for="clip_length" class="block text-sm text-slate-400">Clip length</label>
+    <input id="clip_length" name="clip_length" type="number" min="5" max="60" step="5" value="{{ s.clip_length }}"
+           class="mt-1 w-40 rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white outline-none ring-slate-700 focus:ring-1">
+    <p class="mt-1 text-xs text-slate-500">highlight clip length, seconds</p>
+  </div>
+  <button type="submit"
+          class="rounded bg-sky-600 px-4 py-2 text-sm font-medium text-white hover:bg-sky-500">Save</button>
+</form>
+{% endblock %}

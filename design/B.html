@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>repurpose — B</title>
+<style>
+html, body {
+  background-color: #FCFBF8;
+}
+body {
+  margin: 0;
+  padding: 6vh 7vw 7vh;
+  color: #14161A;
+  font-family: Helvetica, Arial, "Helvetica Neue", sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.asset {
+  color: #A6421C;
+}
+.name {
+  margin: 0 0 9vh;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.58em;
+}
+.split {
+  display: flex;
+  gap: 9vw;
+  align-items: flex-start;
+}
+.give {
+  flex: 0 0 32%;
+  text-align: right;
+}
+.get {
+  flex: 1 1 auto;
+}
+.seamline {
+  margin: 0 0 7vh;
+  font-size: 40px;
+  font-weight: 400;
+  line-height: 1.16;
+  letter-spacing: -0.015em;
+}
+.stack {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.big {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 0.45rem;
+}
+.state {
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+.stg {
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  line-height: 2.1;
+  margin-top: 1.4rem;
+}
+.mid {
+  font-size: 15px;
+  line-height: 1.7;
+  margin-bottom: 0.9rem;
+}
+.lab {
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  line-height: 2.35;
+}
+.fig {
+  font-size: 14.5px;
+  letter-spacing: 0.1em;
+  line-height: 2.1;
+  margin-top: 1.2rem;
+}
+.note {
+  font-size: 12.5px;
+  line-height: 1.8;
+  margin-bottom: 1.1rem;
+}
+.trigger {
+  font-size: 21px;
+  font-weight: 700;
+  margin-top: 3.4rem;
+}
+.stack + .stack {
+  margin-top: 2.6rem;
+}
+</style>
+</head>
+<body>
+<header>
+  <p class="name">repurpose</p>
+</header>
+<main>
+  <div class="split">
+    <div class="give">
+      <p class="seamline">YouTube URL -&gt;</p>
+      <ul class="stack">
+        <li class="lab">Jobs</li>
+        <li class="lab">Settings</li>
+        <li class="lab">Title</li>
+        <li class="lab">Status</li>
+        <li class="lab">Created</li>
+        <li class="lab">open</li>
+        <li class="lab">YouTube URL</li>
+        <li class="lab">…or upload a file</li>
+        <li class="lab">model</li>
+        <li class="lab">clip length</li>
+      </ul>
+      <ul class="stack">
+        <li class="state">queued</li>
+        <li class="state">running</li>
+        <li class="state">done</li>
+        <li class="state">failed</li>
+      </ul>
+      <p class="stg">download transcribe draft clip</p>
+      <p class="mid">Waiting in the queue…</p>
+      <p class="mid">Working — transcribe…</p>
+      <p class="mid">Job failed.</p>
+      <p class="mid">No jobs yet - paste a URL above.</p>
+      <p class="mid">[n] jobs · [n] pending</p>
+      <p class="note">A file OR a URL works — leave one blank if you use the other. mp4 / mov / mp3 / wav / m4a / webm, max 500 MB.</p>
+      <p class="fig">15 minutes</p>
+      <p class="fig">Days 1-14</p>
+      <p class="fig">tiny base small medium</p>
+      <p class="trigger">Repurpose</p>
+    </div>
+
+    <div class="get">
+      <p class="seamline asset">transcript -&gt; LinkedIn/X drafts -&gt; 9:16 clip</p>
+      <ul class="stack">
+        <li class="big asset">Transcript</li>
+        <li class="big asset">LinkedIn draft</li>
+        <li class="big asset">X thread</li>
+        <li class="big asset">Video</li>
+      </ul>
+      <ul class="stack">
+        <li class="mid asset">Save</li>
+        <li class="mid asset">Copy</li>
+        <li class="mid asset">Download clip</li>
+        <li class="mid asset">Download .srt</li>
+        <li class="mid asset">Copied</li>
+      </ul>
+      <p class="note asset">transcript, drafts and the clip appear here when it finishes.</p>
+      <p class="note asset">one tweet per paragraph - keep each under 280 chars</p>
+      <p class="note asset">No clip generated for this job.</p>
+      <p class="note asset">No transcript segments.</p>
+      <p class="fig asset">30-second</p>
+      <p class="fig asset">4 social networks</p>
+    </div>
+  </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}repurpose — jobs{% endblock %}
+{% block content %}
+<h1 class="mb-1 text-xl font-bold text-white">Repurpose</h1>
+<p class="mb-5 text-sm text-slate-400">YouTube URL -&gt; transcript -&gt; LinkedIn/X drafts -&gt; 9:16 clip</p>
+
+<!-- ingest -->
+<form method="post" action="{{ url_for('ingest') }}" enctype="multipart/form-data"
+      class="mb-6 space-y-3 rounded border border-slate-800 bg-slate-900 p-4">
+  <div>
+    <label for="url" class="block text-sm text-slate-400">YouTube URL</label>
+    <input id="url" name="url" type="text" placeholder="https://www.youtube.com/watch?v=..."
+           class="mt-1 w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white placeholder:text-slate-600 outline-none ring-slate-700 focus:ring-1">
+  </div>
+  <div>
+    <label for="file" class="block text-sm text-slate-400">…or upload a file</label>
+    <input id="file" name="file" type="file" accept=".mp4,.mov,.mp3,.wav,.m4a,.webm"
+           class="mt-1 block w-full text-sm text-slate-400 file:mr-3 file:cursor-pointer file:rounded file:border file:border-slate-700 file:bg-slate-800 file:px-3 file:py-1.5 file:text-sm file:text-slate-200 hover:file:bg-slate-700">
+    <p class="mt-1 text-xs text-slate-500">A file OR a URL works — leave one blank if you use the other. mp4 / mov / mp3 / wav / m4a / webm, max 500 MB.</p>
+  </div>
+  <button type="submit"
+          class="rounded bg-sky-600 px-4 py-2 text-sm font-medium text-white hover:bg-sky-500">Repurpose</button>
+</form>
+
+<!-- jobs -->
+<h2 class="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Jobs</h2>
+<div class="overflow-hidden rounded border border-slate-800">
+  <table class="w-full text-sm">
+    <thead class="bg-slate-900 text-left text-slate-400">
+      <tr><th class="px-3 py-2">Title</th><th class="px-3 py-2">Status</th><th class="px-3 py-2">Created</th><th class="px-3 py-2"></th></tr>
+    </thead>
+    <tbody>
+      {% for r in jobs %}
+      <tr class="border-t border-slate-800 {% if loop.index0 % 2 %}bg-slate-900/40{% endif %}">
+        <td class="max-w-md truncate px-3 py-2">
+          <a href="{{ url_for('job_page', jid=r['id']) }}" class="text-white hover:text-sky-400">{{ r['title'] or r['source'] }}</a>
+        </td>
+        <td class="px-3 py-2">
+          {% if r['status'] == 'queued' %}
+          <span class="rounded bg-slate-800 px-2 py-0.5 text-xs text-slate-300">queued</span>
+          {% elif r['status'] == 'running' %}
+          <span class="animate-pulse rounded bg-amber-900 px-2 py-0.5 text-xs text-amber-300">running{% if r['stage'] %} · {{ r['stage'] }}{% endif %}</span>
+          {% elif r['status'] == 'done' %}
+          <span class="rounded bg-emerald-900 px-2 py-0.5 text-xs text-emerald-300">done</span>
+          {% else %}
+          <span class="rounded bg-red-900 px-2 py-0.5 text-xs text-red-300" title="{{ r['error'] }}">failed</span>
+          {% endif %}
+        </td>
+        <td class="px-3 py-2 text-slate-400">{{ r['created_at'] }}</td>
+        <td class="px-3 py-2 text-right">
+          <a href="{{ url_for('job_page', jid=r['id']) }}" class="text-sky-400 hover:underline">open</a>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4" class="px-3 py-6 text-center text-slate-500">No jobs yet - paste a URL above.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<p class="mt-3 text-xs text-slate-500">
+  model <span class="text-slate-300">{{ model }}</span> · clip length <span class="text-slate-300">{{ clip_len }}s</span>
+  — <a href="{{ url_for('settings') }}" class="text-sky-400 hover:underline">Settings</a>
+</p>
+{% endblock %}

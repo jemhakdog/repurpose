@@ -1,0 +1,9 @@
+[project]
+name = "repurpose"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "flask>=3.0",
+    "yt-dlp>=2024.8.6",
+    "faster-whisper>=1.0",
+]
